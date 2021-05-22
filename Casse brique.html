@@ -1,0 +1,219 @@
+<html>
+<head>
+<title>Casse Brique en HTML5/javascript</title>
+<script src="sha1-min.js" type="text/javascript"></script>
+<script src="usefull.js" type="text/javascript"></script>
+<script src="boutton.js" type="text/javascript"></script>
+<script src="score.js" type="text/javascript"></script>
+<script src="background.js" type="text/javascript"></script>
+<script src="moteur.js" type="text/javascript"></script>
+<script src="render.js" type="text/javascript"></script>
+<script src="level.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+var fps = 0;
+var timeold = 0;
+var timetick = 0;
+var ready = false;
+var niveau = 0;
+
+var ctx = null;
+var canvas = null;
+var mousex = 0;
+var mousey = 0;
+var game_q = 1;
+var fps = 0;
+
+
+function main()
+{
+	canvas = document.getElementById('game');
+	if (canvas.getContext)
+	{
+		ctx = canvas.getContext('2d');
+
+		//image
+		init();
+		initscore();
+		setInterval(draw,10);
+
+	}
+}
+
+function draw()
+{
+	render(ctx,game_q,img);
+	if(game==1) // pause
+	{
+		brique(ctx,215,200,200,65,5,25,'white',0.85);
+
+		ctx.textAlign = "left";
+		ctx.textBaseline = "alphabetic";
+		ctx.font = "38pt bold Arial";
+		ctx.fillStyle = "rgba("+color_conv("red")+",1.0)";
+		ctx.fillText("PAUSE", 225, 250);
+		ctx.lineWidth = 1;
+		ctx.strokeText("PAUSE", 225, 250);
+	}
+	else if(game==0) // menu
+	{
+		brique(ctx,50,50,500,500,5,25,'white',0.85);
+
+		ctx.textAlign = "left";
+		ctx.textBaseline = "alphabetic";
+		ctx.font = "32pt bold Arial";
+		ctx.fillStyle = "rgba("+color_conv("blue")+",1.0)";
+		ctx.fillText("BETA", 350, 175);
+		ctx.fillStyle = "rgba("+color_conv("red")+",1.0)";
+		ctx.fillText("Casse brique", 150, 150);
+		ctx.lineWidth = 1;
+		ctx.strokeStyle = "rgba("+color_conv("black")+",1.0)";
+		ctx.strokeText("Casse brique", 150, 150);
+
+		ctx.font = "13pt bold Arial";
+		ctx.fillStyle = "rgba("+color_conv("black")+",1.0)";
+		ctx.fillText("cliquez sur un numeros de niveau pour le lancer", 75, 200);
+		ctx.fillText("p = pause", 75, 215);
+		ctx.fillText("q = qualitee (bas,moyen,haut)", 75, 230);
+		ctx.fillText("souris = raquette", 75, 245);
+		ctx.fillText("echap = quitter partie en cours", 75, 260);
+		ctx.fillText("Cree par Brice JULLIAN", 275, 500);
+
+		boutton_render(ctx);
+	}
+	else // game
+	{
+		// fps calcul
+		timetick++;
+		if(timeold<(timestamp()-1000))
+		{
+			timeold = timestamp();
+			fps = timetick;
+			timetick = 0;
+		}
+
+		/*// paddle
+		document.getElementById('mousex').innerHTML="mouse x = "+mousex;
+		document.getElementById('mousey').innerHTML="mouse y = "+mousey;//*/
+
+		//ball
+		for(var t=0;t<10;t++)
+			ball(ctx,t);
+	}
+
+	//chargement
+
+	if(!ready)
+	{
+		brique(ctx,0,0,170,20,0,0,'black',1.0);
+		ctx.textAlign = "left";
+		ctx.textBaseline = "alphabetic";
+		ctx.font = "10pt bold Arial";
+		ctx.fillStyle = "rgba("+color_conv("white")+",1.0)";
+		ctx.fillText("Chargement du niveau "+niveau, 2, 15);
+	}
+
+	// status bar
+	brique(ctx,0,580,600,20,1,0,'white',0.75);
+	ctx.textAlign = "left";
+	ctx.textBaseline = "alphabetic";
+	ctx.font = "10pt bold Arial";
+	ctx.fillStyle = "rgba("+color_conv("black")+",1)";
+	ctx.fillText("niveau "+niveau+" | "+fps+" fps | quality : "+game_q+" | points : "+score+"", 2, 595);
+
+	/*for(var t=0;t<10;t++)
+	{
+		if(ballv[t]!=0.0)
+		{
+			brique(ctx,ballx[t],bally[t],100,20,1,0,'white',0.75);
+			ctx.textAlign = "left";
+			ctx.textBaseline = "alphabetic";
+			ctx.font = "10pt bold Arial";
+			ctx.fillStyle = "rgba("+color_conv("black")+",1)";
+			ctx.fillText("angle : "+balla[t], ballx[t],bally[t]+18);
+		}
+	}*/
+}
+
+function onMouseMove(event) {
+  //if (evt.pageX && canvasMinX &amp;&amp; evt.pageX &lt; canvasMaxX) {
+	if(game==2)
+	{
+		mousex = event.pageX;
+		mousey = event.pageY;
+	}
+	else if(game==0)
+	{
+		boutton_survol(event);
+	}
+  //}
+}
+
+function onMouseClick(event)
+{
+	if(game==0)
+	{
+		boutton_click(event);
+	}
+	else if(ready)
+	{
+		game=2;
+	}
+}
+
+function onKeyDown(event)
+{
+
+	if(event.keyCode==80)
+	{
+		if(game==2)
+			game=1;
+		else if(game==1)
+			game=2;
+	}
+	if(event.keyCode==81)
+	{
+		if(game_q==0)
+			game_q = 1;
+		else if(game_q==1)
+			game_q = 2;
+		else
+			game_q = 0;
+	}
+	if(event.keyCode==27)
+	{
+		if(game==2)
+		{
+			add_score(score);
+			score = 0;
+			game=0;
+		}
+	}
+}
+
+/*
+	q	: 81
+	p	: 80
+	up	: 38
+	left	: 37
+	right	: 39
+	down	: 40
+	return	: 13
+	echap	: 27
+*/
+
+</script>
+<style type="text/css">
+	canvas { border: 1px solid black; }
+	.info {float:right}
+	.info * {text-align:right;}
+</style>
+</head>
+<body onload="main();" onkeydown="onKeyDown(event)">
+	<canvas id="game" width="600" height="600" onmousemove="onMouseMove(event);" onclick="onMouseClick(event)"></canvas>
+	<div class="info">
+		<div id="tab_score"></div>
+	</div>
+</body>
+</html>
+

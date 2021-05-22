@@ -1,0 +1,28 @@
+##MAJ 24 juillet 2012
+Revision du code en vue de l'abandon
+
+##MAJ 6 novembre 2010
+ajout systeme de score
+
+##MAJ 27 septembre 2009
+-ajout du systeme de niveau par mysql/ajax
+-ajout des bonus et leur effet (x4,slow,speed,multi,dark,junk)
+-ajout des block bonus / fantome
+-ajout du systeme de fond dynamique (space et ocean) sur 2 niveau de qualitee : bas et moyen
+-ajout de quelque couleur au "render" (sable, feu, bleu sombre)
+-ajout de la touche echap pour quitter un niveau
+-amelioration de la collision avec la barre
+-amelioration de la qualitee graphique en "HD" (trés gourmand)
+-amelioration graphique du menu et de la pause
+-refonte de la collision avec les briques
+-refonte de la fonction color_conv_light()
+-redimentionnement de la barre
+-reinitialisation des bonus si perdu + division du score par 1.5 au lieu de 2
+
+##MAJ 08 aout 2009
+un petit projet en developpement,
+il necessite le support de l'html 5
+tester sur firefox 3.5 et chromium
+tester mais ne fonctionne pas sur opera et konqueror
+code sous licence LGPL
+developper sous linux !

@@ -1,0 +1,5 @@
+execute cassebrique.sql in mysql (on any existing table or a new table)
+
+configure config.inc.php
+
+launch "Casse brique.html" with your browser
